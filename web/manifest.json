@@ -1,0 +1,35 @@
+{
+    "name": "simple_auth",
+    "short_name": "simple_auth",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "SimpleAuth is a Flutter-based app that ensures top-notch security by requiring biometric or facial recognition every time the user returns to the app. It features a Splash Screen, Login and Registration forms, and a Profile Page. The primary focus is on seamless, secure access with mandatory re-authentication to protect user data.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

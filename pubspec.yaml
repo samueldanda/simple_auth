@@ -1,0 +1,25 @@
+name: simple_auth
+description: "SimpleAuth is a Flutter-based app that ensures top-notch security by requiring biometric or facial recognition every time the user returns to the app. It features a Splash Screen, Login and Registration forms, and a Profile Page. The primary focus is on seamless, secure access with mandatory re-authentication to protect user data."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+
+  uses-material-design: true
