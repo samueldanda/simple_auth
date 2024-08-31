@@ -1,77 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_auth/providers/language_provider.dart';
+import 'package:simple_auth/providers/theme_provider.dart';
+import 'package:simple_auth/providers/user_provider.dart';
+import 'package:simple_auth/routes/route_generator.dart';
+import 'package:simple_auth/utils/check_device.dart';
+import 'package:simple_auth/utils/db.dart';
+import 'package:simple_auth/utils/theme.dart';
+import 'package:simple_auth/app_lifecycle_observer.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:simple_auth/views/device_unsafe.dart';
 
-void main() {
+import 'config/localization/localications.dart';
+import 'config/theme.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const MyApp());
+  DatabaseHelper.db.initDatabase();
+
+  bool isDeviceSafe = await checkDeviceIsSafe();
+  if (!isDeviceSafe) {
+    runApp(const DeviceUnsafeApp());
+  } else {
+    runApp(MultiProvider(providers: [
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => LanguageProvider()),
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+    ], child: const SimpleAuthApp()));
+  }
+
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp {
+  const MyApp();
+}
+
+class SimpleAuthApp extends StatelessWidget {
+  const SimpleAuthApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SimpleAuth',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'SimpleAuth Home Page'),
-    );
-  }
-}
+    return Consumer2<ThemeProvider, LanguageProvider>(
+      builder: (context, themeProvider, languageProvider, child) {
+        // final brightness =
+        //     View.of(context).platformDispatcher.platformBrightness;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+        TextTheme textTheme = createTextTheme(context, "Open Sans", "Poppins");
+        MaterialTheme theme = MaterialTheme(textTheme);
 
-  final String title;
+        final themeMode = themeProvider.themeMode;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+        final locale = languageProvider.locale;
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+        return MaterialApp(
+          title: 'Simple Auth',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          theme: themeMode == ThemeMode.light ? theme.light() : theme.dark(),
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate, // Ensure this line is present
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          supportedLocales: const [
+            Locale('en', ''), // English
+            Locale('sw', ''), // Swahili
+          ],
+          initialRoute: '/',
+          onGenerateRoute: RouteGenerator.generateRoute,
+          builder: (context, child) {
+            return AppLifecycleObserver(child: child!);
+          },
+        );
+      },
     );
   }
 }
