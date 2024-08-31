@@ -232,7 +232,13 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                               context,
                                               locale.translate('user_name'),
                                               locale
-                                                  .translate('user_name_text')),
+                                                  .translate('user_name_text'))
+                                          .copyWith(
+                                            errorMaxLines: 2,
+                                            errorStyle: const TextStyle(
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
                                       validator: (val) {
                                         if (val!.isEmpty) {
                                           return locale
@@ -262,6 +268,10 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                               locale.translate('pass'),
                                               locale.translate('pass_text'))
                                           .copyWith(
+                                            errorMaxLines: 2,
+                                            errorStyle: const TextStyle(
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                             suffixIcon: IconButton(
                                               icon: Icon(
                                                 _isObscured

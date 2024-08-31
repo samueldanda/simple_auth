@@ -179,13 +179,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               child: TextFormField(
                                 controller: _firstNameController,
                                 focusNode: _firstNameFocusNode,
-                                decoration: ThemeHelper().textInputDecoration(
-                                    context,
-                                    locale!.translate('first_name'),
-                                    locale.translate('first_name_text')),
+                                decoration: ThemeHelper()
+                                    .textInputDecoration(
+                                        context,
+                                        locale!.translate('first_name'),
+                                        locale.translate('first_name_text'))
+                                    .copyWith(
+                                      errorMaxLines: 2,
+                                      errorStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                 validator: (val) {
                                   if (val!.isEmpty) {
                                     return locale.translate('first_name_error');
+                                  } else if (val.length < 3) {
+                                    return locale.translate(
+                                        'first_name_min_length_error');
+                                  } else if (!RegExp(r"^[a-zA-Z-' ]+$")
+                                      .hasMatch(val)) {
+                                    return locale.translate(
+                                        'first_name_invalid_chars_error');
                                   }
                                   return null;
                                 },
@@ -207,13 +221,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               child: TextFormField(
                                 controller: _lastNameController,
                                 focusNode: _lastNameFocusNode,
-                                decoration: ThemeHelper().textInputDecoration(
-                                    context,
-                                    locale.translate('last_name'),
-                                    locale.translate('last_name_text')),
+                                decoration: ThemeHelper()
+                                    .textInputDecoration(
+                                        context,
+                                        locale.translate('last_name'),
+                                        locale.translate('last_name_text'))
+                                    .copyWith(
+                                      errorMaxLines: 2,
+                                      errorStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                 validator: (val) {
                                   if (val!.isEmpty) {
                                     return locale.translate('last_name_error');
+                                  } else if (val.length < 3) {
+                                    return locale.translate(
+                                        'last_name_min_length_error');
+                                  } else if (!RegExp(r"^[a-zA-Z-' ]+$")
+                                      .hasMatch(val)) {
+                                    return locale.translate(
+                                        'last_name_invalid_chars_error');
                                   }
                                   return null;
                                 },
@@ -233,10 +261,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               child: TextFormField(
                                 controller: _emailController,
                                 focusNode: _emailFocusNode,
-                                decoration: ThemeHelper().textInputDecoration(
-                                    context,
-                                    locale.translate('email_'),
-                                    locale.translate('email_text')),
+                                decoration: ThemeHelper()
+                                    .textInputDecoration(
+                                        context,
+                                        locale.translate('email_'),
+                                        locale.translate('email_text'))
+                                    .copyWith(
+                                      errorMaxLines: 2,
+                                      errorStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (val) {
                                   if (val!.isEmpty) {
@@ -268,10 +303,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               child: TextFormField(
                                 controller: _mobileNumberController,
                                 focusNode: _mobileNumberFocusNode,
-                                decoration: ThemeHelper().textInputDecoration(
-                                    context,
-                                    locale.translate('phone_'),
-                                    locale.translate('phone_text')),
+                                decoration: ThemeHelper()
+                                    .textInputDecoration(
+                                        context,
+                                        locale.translate('phone_'),
+                                        locale.translate('phone_text'))
+                                    .copyWith(
+                                      errorMaxLines: 2,
+                                      errorStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                 keyboardType: TextInputType.phone,
                                 validator: (val) {
                                   if (val!.isEmpty) {
@@ -306,9 +348,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 focusNode: _passwordFocusNode,
                                 obscureText: _isObscured,
                                 decoration: ThemeHelper()
-                                    .textInputDecoration(context, locale.translate('password'),
-                                    locale.translate('password_text'))
+                                    .textInputDecoration(
+                                        context,
+                                        locale.translate('password'),
+                                        locale.translate('password_text'))
                                     .copyWith(
+                                      errorMaxLines: 2,
+                                      errorStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _isObscured
@@ -326,6 +374,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 validator: (val) {
                                   if (val!.isEmpty) {
                                     return locale.translate('password_error');
+                                  } else if (val.length < 8) {
+                                    return locale
+                                        .translate('password_min_length_error');
+                                  } else if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                                    return locale
+                                        .translate('password_uppercase_error');
+                                  } else if (!RegExp(r'[a-z]').hasMatch(val)) {
+                                    return locale
+                                        .translate('password_lowercase_error');
+                                  } else if (!RegExp(r'[0-9]').hasMatch(val)) {
+                                    return locale
+                                        .translate('password_digit_error');
+                                  } else if (!RegExp(r'[!@#\$&*~]')
+                                      .hasMatch(val)) {
+                                    return locale.translate(
+                                        'password_special_char_error');
                                   }
                                   return null;
                                 },
@@ -355,7 +419,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                             }),
                                         Text(
                                           locale.translate('terms'),
-                                          style: const TextStyle(color: Colors.grey),
+                                          style: const TextStyle(
+                                              color: Colors.grey),
                                         ),
                                       ],
                                     ),
@@ -407,13 +472,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   FocusScope.of(context).unfocus();
 
                                   if (_formKey.currentState!.validate()) {
-                                    await onRegisterClicked(userProvider, locale);
+                                    await onRegisterClicked(
+                                        userProvider, locale);
                                   }
                                 },
                               ),
                             ),
                             const SizedBox(height: 30.0),
-                             Text(
+                            Text(
                               locale.translate('or'),
                               style: const TextStyle(color: Colors.grey),
                             ),

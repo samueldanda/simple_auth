@@ -3,7 +3,6 @@ import 'db.dart';
 class SecureStorage {
   // Keys
   static const String _themeKey = 'app_theme_mode';
-  static const String _keySelectedLocale = 'selected_locale';
   static const String _canAskForFingerPrintKey = 'user_has_logged_in';
   static const String _useFingerPrintSwitchKey = 'use_finger_print_switch';
   static const String _useEnglishSwitchKey = 'use_english_switch';
