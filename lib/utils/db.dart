@@ -17,13 +17,13 @@ class DatabaseHelper {
   }
 
   Future<Database> initDatabase() async {
-    final path = join(await getDatabasesPath(), 'user_data.db');
+    final path = join(await getDatabasesPath(), 'app_data.db');
     return await openDatabase(path, version: 1, onCreate: _createDb);
   }
 
   void _createDb(Database db, int version) async {
     if (kDebugMode) {
-      print('CREATING TABLE user');
+      print('CREATING TABLES');
     }
 
     await db.execute('''
@@ -34,6 +34,14 @@ class DatabaseHelper {
         email TEXT,
         mobileNumber TEXT,
         password TEXT
+      )
+    ''');
+
+    // New key-value table
+    await db.execute('''
+      CREATE TABLE settings(
+        key TEXT PRIMARY KEY,
+        value TEXT
       )
     ''');
   }
@@ -66,4 +74,34 @@ class DatabaseHelper {
     return null;
   }
 
+  Future<void> saveKeyValue(String key, String value) async {
+    final db = await database;
+    await db?.insert(
+      'settings',
+      {'key': key, 'value': value},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<String?> getValueForKey(String key) async {
+    final db = await database;
+    final List<Map<String, Object?>>? maps = await db?.query(
+      'settings',
+      where: 'key = ?',
+      whereArgs: [key],
+    );
+    if (maps!.isNotEmpty) {
+      return maps.first['value'] as String?;
+    }
+    return null;
+  }
+
+  Future<void> deleteKey(String key) async {
+    final db = await database;
+    await db?.delete(
+      'settings',
+      where: 'key = ?',
+      whereArgs: [key],
+    );
+  }
 }

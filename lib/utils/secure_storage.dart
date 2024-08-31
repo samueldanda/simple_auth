@@ -1,67 +1,61 @@
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'db.dart';
 
 class SecureStorage {
-    final _storage = const FlutterSecureStorage();
+  // Keys
+  static const String _themeKey = 'app_theme_mode';
+  static const String _keySelectedLocale = 'selected_locale';
+  static const String _canAskForFingerPrintKey = 'user_has_logged_in';
+  static const String _useFingerPrintSwitchKey = 'use_finger_print_switch';
+  static const String _useEnglishSwitchKey = 'use_english_switch';
+  static const String _useLightThemeSwitchKey = 'use_light_theme_switch';
 
-    // Keys
-    static const String _themeKey = 'app_theme_mode';
-    static const String _keySelectedLocale = 'selected_locale';
-    static const String _canAskForFingerPrintKey = 'user_has_logged_in';
-    static const String _useFingerPrintSwitchKey = 'use_finger_print_switch';
-    static const String _useEnglishSwitchKey = 'use_english_switch';
-    static const String _useLightThemeSwitchKey = 'use_light_theme_switch';
+  Future<void> saveTheme(int theme) async {
+    await DatabaseHelper.db.saveKeyValue(_themeKey, theme.toString());
+  }
 
-    Future<void> saveTheme(int theme) async {
-      await _storage.write(key: _themeKey, value: theme.toString());
-    }
+  Future<int> getTheme() async {
+    String? themeString = await DatabaseHelper.db.getValueForKey(_themeKey);
+    return themeString != null ? int.tryParse(themeString) ?? 1 : 1;
+  }
 
-    Future<int> getTheme() async {
-      String? step = await _storage.read(key: _themeKey);
-      return step != null ? int.tryParse(step) ?? 1 : 1;
-    }
+  Future<void> saveCanAskForFingerPrint(bool value) async {
+    await DatabaseHelper.db.saveKeyValue(_canAskForFingerPrintKey, value.toString());
+  }
 
-    Future<void> saveCanAskForFingerPrint(bool value) async {
-      await _storage.write(key: _canAskForFingerPrintKey, value: value.toString());
-    }
+  Future<bool> getCanAskForFingerPrint() async {
+    String? value = await DatabaseHelper.db.getValueForKey(_canAskForFingerPrintKey);
+    return value != null ? value.toLowerCase() == 'true' : false;
+  }
 
-    Future<bool> getCanAskForFingerPrint() async {
-      String? value = await _storage.read(key: _canAskForFingerPrintKey);
-      return value != null ? value.toLowerCase() == 'true' : false;
-    }
+  Future<void> saveUseFingerPrintSwitch(bool value) async {
+    await DatabaseHelper.db.saveKeyValue(_useFingerPrintSwitchKey, value.toString());
+  }
 
-    Future<void> saveUseFingerPrintSwitch(bool value) async {
-      await _storage.write(key: _useFingerPrintSwitchKey, value: value.toString());
-    }
+  Future<bool> getUseFingerPrintSwitch() async {
+    String? value = await DatabaseHelper.db.getValueForKey(_useFingerPrintSwitchKey);
+    return value != null ? value.toLowerCase() == 'true' : false;
+  }
 
-    Future<bool> getUseFingerPrintSwitch() async {
-      String? value = await _storage.read(key: _useFingerPrintSwitchKey);
-      return value != null ? value.toLowerCase() == 'true' : false;
-    }
+  Future<void> saveUseEnglishSwitch(bool value) async {
+    await DatabaseHelper.db.saveKeyValue(_useEnglishSwitchKey, value.toString());
+  }
 
-    Future<void> saveUseEnglishSwitch(bool value) async {
-      await _storage.write(key: _useEnglishSwitchKey, value: value.toString());
-    }
+  Future<bool> getUseEnglishSwitch() async {
+    String? value = await DatabaseHelper.db.getValueForKey(_useEnglishSwitchKey);
+    return value != null ? value.toLowerCase() == 'true' : false;
+  }
 
-    Future<bool> getUseEnglishSwitch() async {
-      String? value = await _storage.read(key: _useEnglishSwitchKey);
-      return value != null ? value.toLowerCase() == 'true' : false;
-    }
+  Future<void> saveUseLightThemeSwitch(bool value) async {
+    await DatabaseHelper.db.saveKeyValue(_useLightThemeSwitchKey, value.toString());
+  }
 
-    Future<void> saveUseLightThemeSwitch(bool value) async {
-      await _storage.write(key: _useLightThemeSwitchKey, value: value.toString());
-    }
+  Future<bool> getUseLightThemeSwitch() async {
+    String? value = await DatabaseHelper.db.getValueForKey(_useLightThemeSwitchKey);
+    return value != null ? value.toLowerCase() == 'true' : false;
+  }
 
-    Future<bool> getUseLightThemeSwitch() async {
-      String? value = await _storage.read(key: _useLightThemeSwitchKey);
-      return value != null ? value.toLowerCase() == 'true' : false;
-    }
-
-    Future<void> logout() async {
-      await _storage.delete(key: _canAskForFingerPrintKey);
-      await _storage.delete(key: _useFingerPrintSwitchKey);
-    }
+  Future<void> logout() async {
+    await DatabaseHelper.db.deleteKey(_canAskForFingerPrintKey);
+    await DatabaseHelper.db.deleteKey(_useFingerPrintSwitchKey);
+  }
 }

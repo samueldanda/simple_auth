@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:root_jailbreak_detector/root_jailbreak_detector.dart';
 
 Future<bool> checkDeviceIsSafe() async {
-  return true;
-  // locale.translate('dummy')
 
   /// ***************
   /// Root detection
