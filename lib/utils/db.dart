@@ -9,18 +9,26 @@ class DatabaseHelper {
 
   static Database? _database;
 
+  // Update the database version
+  static const int _dbVersion = 2;
+
   Future<Database?> get database async {
     if (_database != null) return _database;
-    // if _database is null we instantiate it
     _database = await initDatabase();
     return _database;
   }
 
   Future<Database> initDatabase() async {
     final path = join(await getDatabasesPath(), 'app_data.db');
-    return await openDatabase(path, version: 1, onCreate: _createDb);
+    return await openDatabase(
+        path,
+        version: _dbVersion,
+        onCreate: _createDb,
+        onUpgrade: _upgradeDb
+    );
   }
 
+  // Creating tables during initial database creation
   void _createDb(Database db, int version) async {
     if (kDebugMode) {
       print('CREATING TABLES');
@@ -37,7 +45,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // New key-value table
+    // Creating settings table
     await db.execute('''
       CREATE TABLE settings(
         key TEXT PRIMARY KEY,
@@ -46,6 +54,22 @@ class DatabaseHelper {
     ''');
   }
 
+  // Database upgrade logic for migrations
+  void _upgradeDb(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add the settings table in version 2
+      await db.execute('''
+        CREATE TABLE settings(
+          key TEXT PRIMARY KEY,
+          value TEXT
+        )
+      ''');
+    }
+    // Future migrations can be added here
+    // e.g., if (oldVersion < 3) { ... }
+  }
+
+  // User management methods
   Future<bool> insertUser(Map<String, dynamic> user) async {
     final db = await database;
     await db?.delete('user');
@@ -74,6 +98,7 @@ class DatabaseHelper {
     return null;
   }
 
+  // Settings management methods
   Future<void> saveKeyValue(String key, String value) async {
     final db = await database;
     await db?.insert(
