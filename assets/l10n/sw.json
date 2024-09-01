@@ -32,6 +32,7 @@
   "success": "Mafanikio",
   "auth_failed_try_later": "Uthibitishaji umeshindwa. Tafadhali jaribu tena baadaye",
   "invalid_cred": "Jina la mtumiaji au nenosiri si sahihi",
+  "attempt_left": "majaribio yabaki: ",
 
   "first_name": "Jina la Kwanza",
   "first_name_text": "Ingiza jina lako la kwanza",
@@ -68,6 +69,12 @@
   "facebook_tap": "Unagusa alama ya kijamii ya Facebook.",
   "user_created": "Mtumiaji ameundwa kwa mafanikio",
 
+  "app_locked": "Programu imefungwa",
+  "time_left": "Muda uliosalia hadi kufunguliwa:",
+  "days": "siku",
+  "hours": "saa",
+  "minutes": "dakika",
+  "seconds": "sekunde",
 
   "dummy": "bandia"
 }

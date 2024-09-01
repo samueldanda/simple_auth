@@ -32,6 +32,7 @@
   "success": "Success",
   "auth_failed_try_later": "Authentication failed. please try again later",
   "invalid_cred": "Invalid username or password",
+  "attempt_left": " attempts left",
 
   "first_name": "First Name",
   "first_name_text": "Enter your first name",
@@ -67,6 +68,13 @@
   "twitter_tap": "You tap on Twitter social icon.",
   "facebook_tap": "You tap on Facebook social icon.",
   "user_created": "User created successfully",
+
+  "app_locked": "App is locked",
+  "time_left": "Time left until unlock:",
+  "days": "d",
+  "hours": "h",
+  "minutes": "m",
+  "seconds": "s",
 
   "dummy": "dummy"
 }

@@ -40,10 +40,6 @@ Future<void> main() async {
 
 }
 
-class MyApp {
-  const MyApp();
-}
-
 class SimpleAuthApp extends StatelessWidget {
   const SimpleAuthApp({super.key});
 

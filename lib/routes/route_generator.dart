@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_auth/views/device_unsafe.dart';
+import 'package:simple_auth/views/lock_screen.dart';
 import 'package:simple_auth/views/login_screen.dart';
 import 'package:simple_auth/views/profile_screen.dart';
 import 'package:simple_auth/views/registration_screen.dart';
@@ -14,6 +15,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const RegistrationScreen());
       case Routes.deviceUnsafe:
         return MaterialPageRoute(builder: (_) => const DeviceUnsafeApp());
+      case Routes.lockScreen:
+        return MaterialPageRoute(builder: (_) => const LockScreen());
       case Routes.profile:
         final args = settings.arguments as Map<String, dynamic>;
         final user = args['user'] as Map<String, dynamic>;

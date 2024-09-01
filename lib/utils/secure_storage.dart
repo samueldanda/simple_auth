@@ -41,7 +41,7 @@ class SecureStorage {
 
   Future<bool> getUseEnglishSwitch() async {
     String? value = await DatabaseHelper.db.getValueForKey(_useEnglishSwitchKey);
-    return value != null ? value.toLowerCase() == 'true' : false;
+    return value != null ? value.toLowerCase() == 'true' : true;
   }
 
   Future<void> saveUseLightThemeSwitch(bool value) async {

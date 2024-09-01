@@ -173,8 +173,23 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     var locale = AppLocalizations.of(context);
+    final locale2 = Localizations.localeOf(context);
 
     return Consumer<UserProvider>(builder: (context, userProvider, child) {
+      // Check if the app is locked and navigate safely
+      if (userProvider.isLocked) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!Navigator.of(context).userGestureInProgress) {
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, Routes.lockScreen);
+              }
+            });
+          }
+        });
+      }
+
+
       return LoadingOverlay(
         isLoading: userProvider.isLoading,
         child: Scaffold(
@@ -229,16 +244,16 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                       },
                                       decoration: ThemeHelper()
                                           .textInputDecoration(
-                                              context,
-                                              locale.translate('user_name'),
-                                              locale
-                                                  .translate('user_name_text'))
+                                          context,
+                                          locale.translate('user_name'),
+                                          locale
+                                              .translate('user_name_text'))
                                           .copyWith(
-                                            errorMaxLines: 2,
-                                            errorStyle: const TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
+                                        errorMaxLines: 2,
+                                        errorStyle: const TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
                                       validator: (val) {
                                         if (val!.isEmpty) {
                                           return locale
@@ -264,28 +279,28 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                       obscureText: _isObscured,
                                       decoration: ThemeHelper()
                                           .textInputDecoration(
-                                              context,
-                                              locale.translate('pass'),
-                                              locale.translate('pass_text'))
+                                          context,
+                                          locale.translate('pass'),
+                                          locale.translate('pass_text'))
                                           .copyWith(
-                                            errorMaxLines: 2,
-                                            errorStyle: const TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            suffixIcon: IconButton(
-                                              icon: Icon(
-                                                _isObscured
-                                                    ? Icons.visibility_off
-                                                    : Icons.visibility,
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _isObscured =
-                                                      !_isObscured; // Toggle the visibility state
-                                                });
-                                              },
-                                            ),
+                                        errorMaxLines: 2,
+                                        errorStyle: const TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _isObscured
+                                                ? Icons.visibility_off
+                                                : Icons.visibility,
                                           ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _isObscured =
+                                              !_isObscured; // Toggle the visibility state
+                                            });
+                                          },
+                                        ),
+                                      ),
                                       validator: (val) {
                                         if (val!.isEmpty) {
                                           return locale.translate('pass_error');
@@ -310,7 +325,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
+                                              color: Theme
+                                                  .of(context)
                                                   .colorScheme
                                                   .onPrimary),
                                         ),
@@ -320,7 +336,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 
                                         if (_formKey.currentState!.validate()) {
                                           await onLoginClicked(
-                                              userProvider, locale);
+                                              userProvider, locale, locale2);
                                         }
                                       },
                                     ),
@@ -340,7 +356,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                           },
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
+                                            color: Theme
+                                                .of(context)
                                                 .colorScheme
                                                 .secondary),
                                       ),
@@ -355,10 +372,12 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                         shape: BoxShape.circle,
                                         gradient: LinearGradient(
                                           colors: [
-                                            Theme.of(context)
+                                            Theme
+                                                .of(context)
                                                 .colorScheme
                                                 .primary,
-                                            Theme.of(context)
+                                            Theme
+                                                .of(context)
                                                 .colorScheme
                                                 .secondary,
                                           ],
@@ -368,7 +387,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                                         boxShadow: [
                                           BoxShadow(
                                             color:
-                                                Colors.black.withOpacity(0.2),
+                                            Colors.black.withOpacity(0.2),
                                             spreadRadius: 2,
                                             blurRadius: 8,
                                             offset: const Offset(2, 4),
@@ -413,11 +432,17 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
       if (!canCheckBiometrics || !hasBiometrics) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .tertiaryContainer,
             content: Text(
               locale.translate('biometric_not_available'),
               style: TextStyle(
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .tertiary,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -445,70 +470,82 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
           print('Authentication successful');
         }
 
-        var login = await userProvider.getUser();
-        if (login != null) {
-          if (kDebugMode) {
-            print(login);
-          }
-
-          if (!_useFingerPrintSwitch) {
-            await SecureStorage().saveUseFingerPrintSwitch(true);
-          }
-
-          Navigator.pushReplacementNamed(context, Routes.profile,
-              arguments: {'user': userProvider.user});
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-              content: Text(
-                locale.translate('success'),
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              content: Text(
-                locale.translate('auth_failed_try_later'),
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          );
-        }
+        // var login = await userProvider.getUser();
+        // if (login != null) {
+        // if (kDebugMode) {
+        //   print(login);
+        // }
+        //
+        // if (!_useFingerPrintSwitch) {
+        //   await SecureStorage().saveUseFingerPrintSwitch(true);
+        // }
+        //
+        // Navigator.pushReplacementNamed(context, Routes.profile,
+        //     arguments: {'user': userProvider.user});
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        //     content: Text(
+        //       locale.translate('success'),
+        //       style: TextStyle(
+        //           color: Theme.of(context).colorScheme.tertiary,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        // );
+        // } else {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       backgroundColor: Theme.of(context).colorScheme.errorContainer,
+        //       content: Text(
+        //         locale.translate('auth_failed_try_later'),
+        //         style: TextStyle(
+        //             color: Theme.of(context).colorScheme.error,
+        //             fontWeight: FontWeight.bold),
+        //       ),
+        //     ),
+        //   );
+        // }
       } else {
         if (kDebugMode) {
           print('Authentication failed');
         }
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .errorContainer,
           content: Text(
             locale.translate('auth_failed'),
             style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .error,
                 fontWeight: FontWeight.bold),
           ),
         ));
       }
     } catch (e) {
       SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .errorContainer,
         content: Text(
           locale.translate('auth_failed'),
           style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .error,
               fontWeight: FontWeight.bold),
         ),
       );
     }
   }
 
-  Future<void> onLoginClicked(userProvider, locale) async {
+  Future<void> onLoginClicked(userProvider, locale, locale2) async {
     final String userName = _usernameController.text.trim();
     final String password = _passwordController.text.trim();
 
@@ -523,27 +560,48 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
           arguments: {'user': userProvider.user});
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .tertiaryContainer,
           content: Text(
             locale.translate('success'),
             style: TextStyle(
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .tertiary,
                 fontWeight: FontWeight.bold),
           ),
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          content: Text(
-            locale.translate('invalid_cred'),
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-                fontWeight: FontWeight.bold),
+      if (userProvider.isLocked) {
+        Navigator.pushReplacementNamed(context, Routes.lockScreen);
+      } else {
+        var attempts = locale2.languageCode == 'sw'
+            ? '. ${locale.translate('attempt_left')}${3 -
+            userProvider.loginAttempts}'
+            : '. ${userProvider.maxAttempts - userProvider.loginAttempts}${locale.translate(
+            'attempt_left')}';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .errorContainer,
+            content: Text(
+              '${locale.translate('invalid_cred')}$attempts',
+              style: TextStyle(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 }
