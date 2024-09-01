@@ -35,7 +35,7 @@ class DatabaseHelper {
     }
 
     await db.execute('''
-      CREATE TABLE user(
+      CREATE TABLE IF NOT EXISTS user(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         firstName TEXT,
         lastName TEXT,
@@ -47,7 +47,7 @@ class DatabaseHelper {
 
     // Creating settings table
     await db.execute('''
-      CREATE TABLE settings(
+      CREATE TABLE IF NOT EXISTS settings(
         key TEXT PRIMARY KEY,
         value TEXT
       )
@@ -59,7 +59,7 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       // Add the settings table in version 2
       await db.execute('''
-        CREATE TABLE settings(
+        CREATE TABLE IF NOT EXISTS settings(
           key TEXT PRIMARY KEY,
           value TEXT
         )
